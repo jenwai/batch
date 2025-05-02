@@ -4,6 +4,10 @@ import com.mbank.batch.dto.TransactionHistoryDto;
 import com.mbank.batch.entity.TransactionHistory;
 import com.mbank.batch.mapper.TransactionMapper;
 import com.mbank.batch.repository.TransactionHistoryRepo;
+import com.mbank.batch.spec.TransactionSpecifications;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.PageRequest;
@@ -11,9 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
+@Slf4j
 public class TransactionHistoryService {
 
   private final TransactionHistoryRepo transactionHistoryRepo;
@@ -46,30 +54,26 @@ public class TransactionHistoryService {
     }
   }
 
-  public Page<TransactionHistoryDto> queryTransactions(String id, String accountNumber,
-    String customerId, int page, int size) {
+  public Page<TransactionHistoryDto> queryTransactions(List<String> accList,
+    String customerId, String description, int page, int size) {
 
     if (page < 0 || size <= 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Param");
     }
 
     var pageable = PageRequest.of(page, size);
-    return this.queryTransactions(id, accountNumber, customerId, pageable)
+    return this.queryTransactions(accList, customerId, description, pageable)
       .map(this.transactionMapper::toDto);
   }
 
-  private Page<TransactionHistory> queryTransactions(String id, String accountNumber,
-    String customerId, Pageable pageable) {
-    if (id != null && accountNumber != null && customerId != null) {
-      return this.transactionHistoryRepo.findByTransactionIdAndAccountNumberAndCustomerId(id,
-        accountNumber, customerId, pageable);
-    } else if (accountNumber != null) {
-      return this.transactionHistoryRepo.findByAccountNumber(accountNumber, pageable);
-    } else if (customerId != null) {
-      return this.transactionHistoryRepo.findByCustomerId(customerId, pageable);
-    } else if (id != null) {
-      return this.transactionHistoryRepo.findByTransactionId(id, pageable);
-    }
-    return Page.empty(pageable);
+  private Page<TransactionHistory> queryTransactions(List<String> accList,
+    String customerId, String description, Pageable pageable) {
+    if ((accList == null || accList.isEmpty())
+      && !StringUtils.hasText(customerId)
+      && !StringUtils.hasText(description))
+      return Page.empty(pageable);
+
+    var spec = TransactionSpecifications.constructQuerySpec(accList, customerId, description);
+    return this.transactionHistoryRepo.findAll(spec, pageable);
   }
 }

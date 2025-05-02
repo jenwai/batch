@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/v1/transactions")
+@RequestMapping("/api/v1")
 public class TransactionHistoryController {
 
   private final TransactionHistoryService transactionHistoryService;
@@ -18,8 +20,22 @@ public class TransactionHistoryController {
     this.transactionHistoryService = transactionHistoryService;
   }
 
-  @PatchMapping("/{id}/description")
-  public ResponseEntity<?> updateTrxDesc(@PathVariable String id,
+  @GetMapping("/transactions")
+  public ResponseEntity<Page<TransactionHistoryDto>> queryTransactions(
+    @RequestParam(value = "acc_list", required = false) List<String> accList,
+    @RequestParam(value = "cust_id", required = false) String customerId,
+    @RequestParam(value = "desc", required = false) String description,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "5") int size) {
+
+    var transactions =
+      this.transactionHistoryService.queryTransactions(accList, customerId, description, page,
+        size);
+    return ResponseEntity.ok(transactions);
+  }
+
+  @PatchMapping("/transactions/{id}/description")
+  public ResponseEntity<?> updateTrxDesc(@PathVariable("id") String id,
     @RequestBody UpdateTrxDescApiRq apiRq) {
 
     try {
@@ -28,18 +44,5 @@ public class TransactionHistoryController {
     } catch (ResponseStatusException e) {
       return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
     }
-  }
-
-  @GetMapping("")
-  public ResponseEntity<Page<TransactionHistoryDto>> queryTransactions(
-    @RequestParam(value = "id", required = false) String id,
-    @RequestParam(value = "acc_no", required = false) String accountNumber,
-    @RequestParam(value = "cust_id", required = false) String customerId,
-    @RequestParam(value = "page", defaultValue = "0") int page,
-    @RequestParam(value = "size", defaultValue = "5") int size) {
-
-    var transactions =
-      this.transactionHistoryService.queryTransactions(id, accountNumber, customerId, page, size);
-    return ResponseEntity.ok(transactions);
   }
 }

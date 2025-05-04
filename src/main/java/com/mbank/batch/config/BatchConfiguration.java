@@ -127,11 +127,22 @@ public class BatchConfiguration {
   public CommandLineRunner runJob(JobLauncher jobLauncher, Job importTrxJob) {
     return args -> {
       log.info("RUNNING importTrxJob");
-      var jobParameters = new JobParametersBuilder()
-        .addLong("run.id", System.currentTimeMillis())
-        .toJobParameters();
 
-      jobLauncher.run(importTrxJob, jobParameters);
+      String csvPath = null;
+      for (String arg : args) {
+        if (arg.startsWith("--csvPath=")) {
+          csvPath = arg.substring("--csvPath=".length());
+        }
+      }
+
+      var jobParametersBuilder = new JobParametersBuilder()
+        .addLong("run.id", System.currentTimeMillis());
+
+      if (csvPath != null && !csvPath.isBlank()) {
+        jobParametersBuilder.addString("csvPath", csvPath);
+      }
+
+      jobLauncher.run(importTrxJob, jobParametersBuilder.toJobParameters());
     };
   }
 }

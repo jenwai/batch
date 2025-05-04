@@ -1,0 +1,2 @@
+org.springframework.boot.SpringApplicationRunListener=\
+com.mbank.batch.config.H2TcpServerRunListener

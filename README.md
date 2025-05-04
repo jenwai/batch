@@ -86,13 +86,6 @@ mvn spring-boot:run
 
 - Data transfer between layers is done via DTOs, with MapStruct for mapping.
 
-### 3c. Test-Driven Development (TDD)
-
-- Tests are written alongside core features using JUnit and Spring Boot Test.
-- Includes:
-    - Unit tests (for services and utilities)
-    - Integration tests (for batch jobs and data access)
-
 ## 4. APIs
 
 ### 4.1 Class Diagram
@@ -109,9 +102,7 @@ TBD: Recommended to add flow diagrams for data loading, querying, and update act
 #### 4.3.1 GET /api/v1/transactions
 
 - Authentication: Basic Auth (admin:admin)
-
 - API Address: GET /api/v1/transactions
-
 - Parameters: `OR junctions will be applied between params `
     - acc_list (optional): List of account numbers to filter
     - cust_id (optional): Customer ID to filter
@@ -223,7 +214,6 @@ curl -u admin:admin -X PATCH "http://localhost:8080/api/v1/transactions/abc123/d
 
 ## 5. File Reference
 
-datasource.txt: The sample data file used for initializing the H2 database on application startup.
-
-application.properties: Configures the file-based H2 database and Spring Batch settings.
+- datasource.txt: The sample data file used for initializing the H2 database on application startup.
+- application.yml: Configures the file-based H2 database and Spring Batch settings.
 

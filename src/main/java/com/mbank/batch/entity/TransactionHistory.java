@@ -1,27 +1,23 @@
 package com.mbank.batch.entity;
 
+import com.mbank.batch.entity.MbCustomer;
+import com.mbank.batch.entity.UserAccount;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "TRANSACTION_HISTORY")
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionHistory {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "TRANSACTION_ID")
-  private String transactionId;
+@MappedSuperclass
+public abstract class TransactionHistory {
 
   @Column(name = "TRX_AMOUNT")
   private BigDecimal trxAmount;
@@ -35,13 +31,17 @@ public class TransactionHistory {
   @Column(name = "TRX_TIME")
   private LocalTime trxTime;
 
-  @Column(name = "CUSTOMER_ID")
-  private String customerId;
-
-  @Column(name = "ACCOUNT_NUMBER")
-  private String accountNumber;
-
   @Version
   @Column(name = "VERSION")
   private Long version;
+
+  public abstract String getTransactionId();
+
+  public abstract MbCustomer getCustomer();
+
+  public abstract void setCustomer(MbCustomer customer);
+
+  public abstract UserAccount getAccount();
+
+  public abstract void setAccount(UserAccount account);
 }

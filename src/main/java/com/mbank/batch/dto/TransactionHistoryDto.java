@@ -1,5 +1,6 @@
 package com.mbank.batch.dto;
 
+import com.mbank.batch.model.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +31,6 @@ public class TransactionHistoryDto {
   private String accountNumber;
 
   private Long version;
+
+  private TransactionType transactionType;
 }

@@ -21,17 +21,21 @@ public class TransactionHistoryController {
   }
 
   @GetMapping("/transactions")
-  public ResponseEntity<Page<TransactionHistoryDto>> queryTransactions(
+  public ResponseEntity<?> queryTransactions(
     @RequestParam(value = "acc_list", required = false) List<String> accList,
     @RequestParam(value = "cust_id", required = false) String customerId,
     @RequestParam(value = "desc", required = false) String description,
     @RequestParam(value = "page", defaultValue = "0") int page,
     @RequestParam(value = "size", defaultValue = "5") int size) {
 
-    var transactions =
-      this.transactionHistoryService.queryTransactions(accList, customerId, description, page,
-        size);
-    return ResponseEntity.ok(transactions);
+    try {
+      Page<TransactionHistoryDto> transactions =
+        this.transactionHistoryService.queryTransactions(accList, customerId, description, page,
+          size);
+      return ResponseEntity.ok(transactions);
+    } catch (ResponseStatusException e) {
+      return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+    }
   }
 
   @PatchMapping("/transactions/{id}/description")

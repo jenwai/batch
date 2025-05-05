@@ -50,8 +50,6 @@ loading via batch job invocation.
     cd ./target
     java -jar ./batch-0.0.1-SNAPSHOT.jar --spring.batch.job.names=customDataLoadJob
 
-`Replace <your-artifact-name> with your actual jar name, e.g., springboot-batch-loader-0.0.1-SNAPSHOT.jar.`
-
 #### Option 2: Using IDE or CLI for Development
 
 ```bash

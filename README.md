@@ -38,13 +38,17 @@ loading via batch job invocation.
 2. Start the application (Spring Boot service):
 
     ```bash
-    java -jar target/<your-artifact-name>.jar
+    cd ./target
+    mkdir -p ./data
+    touch ./data/trxdb.mv.db
+    java -jar ./batch-0.0.1-SNAPSHOT.jar
 
 3. In a second terminal (or IDE instance), run the same JAR with a Spring Batch-specific job argument to load additional
    custom data:
 
     ```bash
-    java -jar target/<your-artifact-name>.jar --spring.batch.job.names=customDataLoadJob
+    cd ./target
+    java -jar ./batch-0.0.1-SNAPSHOT.jar --spring.batch.job.names=customDataLoadJob
 
 `Replace <your-artifact-name> with your actual jar name, e.g., springboot-batch-loader-0.0.1-SNAPSHOT.jar.`
 
@@ -66,8 +70,10 @@ mvn spring-boot:run
     - The data in the H2 database is cleared on each restart to ensure a consistent initial state.
 
 - Schema:
-    - A table is created dynamically based on the content of `datasource.txt`
-    - An additional column is included for optimistic locking (typically @Version).
+    - MbCustomer, UserAccount, AtmWithdrawalHistory, BillPaymentHistory, and FundTransferHistory are designed based on
+      the content of `datasource.txt`
+    - Refer class_diagram below for details.
+    - An additional column is included for optimistic locking (@Version).
 
 ## 3. Design Patterns & Architecture
 
@@ -90,12 +96,11 @@ mvn spring-boot:run
 
 ### 4.1 Class Diagram
 
-TBD: You can visualize domain relationships between TransactionHistory, TransactionHistoryDto, and
-controller/service/repository layers.
+![Class Diagram](./class_diagram.png)
 
 ### 4.2 Activity Diagram
 
-TBD: Recommended to add flow diagrams for data loading, querying, and update actions.
+![Activity Diagram](./activity_diagram.png)
 
 ### 4.3 REST APIs
 
